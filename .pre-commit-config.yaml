@@ -65,8 +65,7 @@ repos:
             flake8-bandit,
             dlint  
           ]
-        files: "^(trestle)"
-        exclude: "(oscal/)"
+        files: "^(trestle_fedramp)"
         stages: [commit]
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.16
