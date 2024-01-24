@@ -32,6 +32,7 @@ fi
 echo "Downloading OSCAL converters from release $1 to $directory"
 
 # Create the directory if it doesn't exist
+mkdir -p "$directory"
 pushd ./"$directory" || exit 1
 
 # Store the long command in another variable to make it easier to read
