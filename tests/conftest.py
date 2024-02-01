@@ -57,15 +57,17 @@ def tmp_trestle_dir_with_ssp(tmp_path: pathlib.Path, monkeypatch: MonkeyPatch) -
     """Create initialized trestle workspace and import the model into it."""
     pytest_cwd = pathlib.Path.cwd()
     model_name = 'ssp'
-    file_path = pathlib.Path(test_utils.JSON_FEDRAMP_SSP_PATH) / test_utils.JSON_FEDRAMP_SSP_NAME
-
+    file_path = test_utils.JSON_TEST_DATA_PATH / test_utils.TEST_SSP_JSON
+    os.chdir(tmp_path)
     testargs = ['trestle', 'init']
     monkeypatch.setattr(sys, 'argv', testargs)
     try:
         Trestle().run()
         i = ImportCmd()
-        args = argparse.Namespace(trestle_root=tmp_path, file=file_path, output=model_name, verbose=0, regenerate=False)
-        i._run(args)
+        args = argparse.Namespace(
+            trestle_root=tmp_path, file=str(file_path), output=model_name, verbose=1, regenerate=False
+        )
+        assert i._run(args) == 0
     except Exception as e:
         raise TrestleError(f'Error creating trestle workspace with ssp: {e}')
     else:

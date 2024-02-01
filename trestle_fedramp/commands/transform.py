@@ -40,7 +40,7 @@ class SSPTransformCmd(CommandBase):
         self.add_argument('-n', '--ssp-name', help='OSCAL SSP name from trestle workspace.', type=str, required=True)
         self.parser.add_argument(
             '-l',
-            '--baseline-level',
+            '--level',
             required=True,
             type=str,
             choices=BaselineLevel.LEVELS,
@@ -64,7 +64,7 @@ class SSPTransformCmd(CommandBase):
             return return_codes.CmdReturnCodes.COMMAND_ERROR.value
 
         try:
-            ssp_transformer = FedrampSSPTransformer(args.baseline_level)
+            ssp_transformer = FedrampSSPTransformer(args.trestle_root, args.level)
             ssp_transformer.transform(ssp_file_path, args.output_file)
         except Exception as e:
             return handle_generic_command_exception(e, logger)

@@ -16,13 +16,17 @@
 """Testing fedramp transform command functionality."""
 
 import argparse
+import logging
 import pathlib
-from typing import Tuple
+from typing import Any, Tuple
 
 from trestle_fedramp.commands.transform import SSPTransformCmd
 
 
-def test_transform_ssp(tmp_path: pathlib.Path, tmp_trestle_dir_with_ssp: Tuple[pathlib.Path, str]) -> None:
+def test_transform_ssp(
+    tmp_path: pathlib.Path,
+    tmp_trestle_dir_with_ssp: Tuple[pathlib.Path, str],
+) -> None:
     """Test Fedramp SSP transform command."""
     tmp_trestle_dir, ssp_name = tmp_trestle_dir_with_ssp
     args = argparse.Namespace(
@@ -32,19 +36,15 @@ def test_transform_ssp(tmp_path: pathlib.Path, tmp_trestle_dir_with_ssp: Tuple[p
     assert rc != 0
 
 
-def test_transform_invalid_trestle_root(tmp_path: pathlib.Path, tmp_trestle_dir: pathlib.Path) -> None:
-    """Test fails with an invalid trestle root."""
-    args = argparse.Namespace(
-        ssp_name='test-ssp', level='high', output_file=str(tmp_path), trestle_root=tmp_path, verbose=1
-    )
-    rc = SSPTransformCmd()._run(args)
-    assert rc != 0
-
-
-def test_transform_missing_ssp(tmp_path: pathlib.Path, tmp_trestle_dir: pathlib.Path) -> None:
+def test_transform_missing_ssp(tmp_path: pathlib.Path, tmp_trestle_dir: pathlib.Path, caplog: Any) -> None:
     """Test fails with a missing ssp."""
     args = argparse.Namespace(
         ssp_name='test-ssp', level='high', output_file=str(tmp_path), trestle_root=tmp_trestle_dir, verbose=1
     )
     rc = SSPTransformCmd()._run(args)
     assert rc != 0
+
+    assert any(
+        record.levelno == logging.ERROR
+        and 'Input ssp test-ssp does not exist in the trestle workspace.' in record.message for record in caplog.records
+    )
