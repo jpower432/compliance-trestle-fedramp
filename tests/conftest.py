@@ -15,16 +15,20 @@
 # limitations under the License.
 """Common fixtures."""
 
+import argparse
 import os
 import pathlib
 import sys
-from typing import Iterator
+from typing import Iterator, Tuple
 
 import pytest
 from pytest import MonkeyPatch
 
+from tests import test_utils
+
 from trestle.cli import Trestle
 from trestle.common.err import TrestleError
+from trestle.core.commands.import_ import ImportCmd
 
 
 @pytest.fixture(scope='function')
@@ -44,5 +48,27 @@ def tmp_trestle_dir(tmp_path: pathlib.Path, monkeypatch: MonkeyPatch) -> Iterato
         raise TrestleError(f'Initialization failed for temporary trestle directory: {e}.')
     else:
         yield tmp_path
+    finally:
+        os.chdir(pytest_cwd)
+
+
+@pytest.fixture(scope='function')
+def tmp_trestle_dir_with_ssp(tmp_path: pathlib.Path, monkeypatch: MonkeyPatch) -> Iterator[Tuple[pathlib.Path, str]]:
+    """Create initialized trestle workspace and import the model into it."""
+    pytest_cwd = pathlib.Path.cwd()
+    model_name = 'ssp'
+    file_path = pathlib.Path(test_utils.JSON_FEDRAMP_SSP_PATH) / test_utils.JSON_FEDRAMP_SSP_NAME
+
+    testargs = ['trestle', 'init']
+    monkeypatch.setattr(sys, 'argv', testargs)
+    try:
+        Trestle().run()
+        i = ImportCmd()
+        args = argparse.Namespace(trestle_root=tmp_path, file=file_path, output=model_name, verbose=0, regenerate=False)
+        i._run(args)
+    except Exception as e:
+        raise TrestleError(f'Error creating trestle workspace with ssp: {e}')
+    else:
+        yield (tmp_path, model_name)
     finally:
         os.chdir(pytest_cwd)
