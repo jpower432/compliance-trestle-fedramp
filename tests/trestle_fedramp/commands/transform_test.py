@@ -13,38 +13,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Testing fedramp convert command functionality."""
+"""Testing fedramp transform command functionality."""
 
 import argparse
 import pathlib
 from typing import Tuple
 
-from trestle_fedramp.commands.convert import ConvertCmd
+from trestle_fedramp.commands.transform import SSPTransformCmd
 
 
-def test_validate_ssp(tmp_path: pathlib.Path, tmp_trestle_dir_with_ssp: Tuple[pathlib.Path, str]) -> None:
-    """Test Fedramp SSP conversion command."""
+def test_transform_ssp(tmp_path: pathlib.Path, tmp_trestle_dir_with_ssp: Tuple[pathlib.Path, str]) -> None:
+    """Test Fedramp SSP transform command."""
     tmp_trestle_dir, ssp_name = tmp_trestle_dir_with_ssp
     args = argparse.Namespace(
         ssp_name=ssp_name, level='high', output_file=str(tmp_path), trestle_root=tmp_trestle_dir, verbose=1
     )
-    rc = ConvertCmd()._run(args)
+    rc = SSPTransformCmd()._run(args)
     assert rc != 0
 
 
-def test_validate_invalid_trestle_root(tmp_path: pathlib.Path, tmp_trestle_dir: pathlib.Path) -> None:
+def test_transform_invalid_trestle_root(tmp_path: pathlib.Path, tmp_trestle_dir: pathlib.Path) -> None:
     """Test fails with an invalid trestle root."""
     args = argparse.Namespace(
         ssp_name='test-ssp', level='high', output_file=str(tmp_path), trestle_root=tmp_path, verbose=1
     )
-    rc = ConvertCmd()._run(args)
+    rc = SSPTransformCmd()._run(args)
     assert rc != 0
 
 
-def test_validate_missing_ssp(tmp_path: pathlib.Path, tmp_trestle_dir: pathlib.Path) -> None:
-    """Test fails with an invalid trestle root."""
+def test_transform_missing_ssp(tmp_path: pathlib.Path, tmp_trestle_dir: pathlib.Path) -> None:
+    """Test fails with a missing ssp."""
     args = argparse.Namespace(
         ssp_name='test-ssp', level='high', output_file=str(tmp_path), trestle_root=tmp_trestle_dir, verbose=1
     )
-    rc = ConvertCmd()._run(args)
+    rc = SSPTransformCmd()._run(args)
     assert rc != 0

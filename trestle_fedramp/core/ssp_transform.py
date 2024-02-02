@@ -49,7 +49,7 @@ class BaselineLevel:
     LEVELS = {LOW, MODERATE, HIGH, LI_SAAS}
 
 
-class FedrampSSPConverter:
+class FedrampSSPTransformer:
     """Populate FedRAMP Template with SSP Information."""
 
     def __init__(self, baseline_level: str) -> None:
@@ -60,7 +60,7 @@ class FedrampSSPConverter:
         if not self.template.exists():
             raise TrestleError(f'FedRAMP Template {self.template} does not exist')
 
-    def convert(self, ssp_file_path: pathlib.Path, output_file: pathlib.Path) -> None:
+    def transform(self, ssp_file_path: pathlib.Path, output_file: pathlib.Path) -> None:
         """Populate FedRAMP SSP Appendix A template with OSCAL SSP information."""
         # The data from the SSP file
         # Loop the template filling in the data for each control

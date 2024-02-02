@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Trestle FedRAMP Convert Command."""
+"""Trestle FedRAMP Transform Command."""
 
 import argparse
 import logging
@@ -25,15 +25,15 @@ from trestle.core.commands.command_docs import CommandBase
 from trestle.core.commands.common import return_codes
 from trestle.oscal import ssp
 
-from trestle_fedramp.core.fedramp_convert.ssp_convert import BaselineLevel, FedrampSSPConverter
+from trestle_fedramp.core.ssp_transform import BaselineLevel, FedrampSSPTransformer
 
 logger = logging.getLogger(__name__)
 
 
-class ConvertCmd(CommandBase):
-    """Convert an OSCAL SSP to FedRAMP SSP Appendix A document."""
+class SSPTransformCmd(CommandBase):
+    """Transform an OSCAL SSP to FedRAMP SSP Appendix A document."""
 
-    name = 'fedramp-convert'
+    name = 'fedramp-transform'
 
     def _init_arguments(self) -> None:
         logger.debug('Init arguments')
@@ -64,8 +64,8 @@ class ConvertCmd(CommandBase):
             return return_codes.CmdReturnCodes.COMMAND_ERROR.value
 
         try:
-            ssp_converter = FedrampSSPConverter(args.baseline_level)
-            ssp_converter.convert(ssp_file_path, args.output_file)
+            ssp_transformer = FedrampSSPTransformer(args.baseline_level)
+            ssp_transformer.transform(ssp_file_path, args.output_file)
         except Exception as e:
             return handle_generic_command_exception(e, logger)
 
