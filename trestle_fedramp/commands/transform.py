@@ -17,20 +17,26 @@
 
 import argparse
 import logging
+import pathlib
+
+from docx import Document  # type: ignore
+from docx.document import Document as DocxDocument  # type: ignore
 
 import trestle.common.log as log
-from trestle.common.err import handle_generic_command_exception
+from trestle.common.err import TrestleError, handle_generic_command_exception
 from trestle.common.model_utils import ModelUtils
-from trestle.core.commands.command_docs import CommandBase
+from trestle.core.commands.command_docs import CommandPlusDocs
 from trestle.core.commands.common import return_codes
 from trestle.oscal import ssp
 
-from trestle_fedramp.core.ssp_transform import BaselineLevel, FedrampSSPTransformer
+from trestle_fedramp.core.baselines import BaselineLevel
+from trestle_fedramp.core.docx_helper import ControlSummaries
+from trestle_fedramp.core.ssp_reader import FedrampControlDict, FedrampSSPReader
 
 logger = logging.getLogger(__name__)
 
 
-class SSPTransformCmd(CommandBase):
+class SSPTransformCmd(CommandPlusDocs):
     """Transform an OSCAL SSP to FedRAMP SSP Appendix A document."""
 
     name = 'fedramp-transform'
@@ -51,7 +57,7 @@ class SSPTransformCmd(CommandBase):
         )
 
     def _run(self, args: argparse.Namespace) -> int:
-        logger.debug('Entering trestle fedramp-convert.')
+        logger.debug('Entering trestle fedramp-transform.')
 
         log.set_log_level_from_args(args)
 
@@ -64,8 +70,24 @@ class SSPTransformCmd(CommandBase):
             return return_codes.CmdReturnCodes.COMMAND_ERROR.value
 
         try:
-            ssp_transformer = FedrampSSPTransformer(args.trestle_root, args.level)
-            ssp_transformer.transform(ssp_file_path, args.output_file)
+            # If this error is thrown, there is a bug in the code
+            template = pathlib.Path(BaselineLevel.get_template(args.level)).resolve()
+            if not template.exists():
+                raise TrestleError(f'Bug FedRAMP Template {template} does not exist')
+
+            # Read the OSCAL SSP data
+            ssp_reader = FedrampSSPReader(args.trestle_root)
+            control_dict: FedrampControlDict = ssp_reader.read_ssp_data(ssp_file_path)
+
+            # Load the document and save it for altering
+            with open(template, 'rb') as file:
+                document: DocxDocument = Document(file)
+
+            # Populate the document with the OSCAL SSP data
+            control_summaries: ControlSummaries = ControlSummaries(document, control_dict)
+            control_summaries.populate()
+
+            document.save(args.output_file)
         except Exception as e:
             return handle_generic_command_exception(e, logger)
 

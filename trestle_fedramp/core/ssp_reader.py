@@ -11,7 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Read and prepare OSCAL SSP information for template."""
+"""
+Read and prepare OSCAL SSP information for template.
+
+The OSCAL SSP is stored in the FedRAMPControlDict in a way that
+would be expected by the FedRAMP Template.
+Control ID -> Labels
+Control Origination Property -> Control Origination String Value
+"""
 
 import pathlib
 from dataclasses import dataclass
@@ -20,6 +27,10 @@ from typing import Dict, List, Optional
 from trestle.common.const import CONTROL_ORIGINATION, NAMESPACE_FEDRAMP
 from trestle.common.list_utils import as_list
 from trestle.common.load_validate import load_validate_model_path
+from trestle.core.catalog.catalog_interface import CatalogInterface
+from trestle.core.control_interface import ControlInterface
+from trestle.core.profile_resolver import ProfileResolver
+from trestle.oscal.catalog import Catalog
 from trestle.oscal.ssp import ImplementedRequirement, SystemSecurityPlan
 
 from trestle_fedramp.const import (
@@ -110,7 +121,11 @@ class ControlOrigination:
 class FedrampSSPData:
     """Class to hold the OSCAL SSP data for FedRAMP SSP conversion."""
 
-    control_origination_by_control: Dict[str, Optional[str]]
+    control_origination: Optional[str]
+
+
+# FedRAMP data by control
+FedrampControlDict = Dict[str, FedrampSSPData]
 
 
 class FedrampSSPReader:
@@ -123,18 +138,40 @@ class FedrampSSPReader:
 
     def __init__(self, trestle_root: pathlib.Path) -> None:
         """Initialize FedRAMP SSP reader."""
-        self.trestle_root = trestle_root
+        self._root = trestle_root
 
-    def read_ssp_data(self, ssp_path: pathlib.Path) -> FedrampSSPData:
+    def read_ssp_data(self, ssp_path: pathlib.Path) -> FedrampControlDict:
         """Read the ssp from file and return the data for the FedRAMP Template."""
-        data: FedrampSSPData = FedrampSSPData(control_origination_by_control={})
-        ssp_data: SystemSecurityPlan = load_validate_model_path(self.trestle_root, ssp_path)  # type: ignore
+        control_dict: FedrampControlDict = {}
+        ssp_data: SystemSecurityPlan = load_validate_model_path(self._root, ssp_path)  # type: ignore
+
+        controls_by_label: Dict[str, str] = self.load_profile_info(ssp_data.import_profile.href)
 
         for implemented_requirement in as_list(ssp_data.control_implementation.implemented_requirements):
             control_id = implemented_requirement.control_id
             control_origination: Optional[str] = self._get_control_origination_values(implemented_requirement)
-            data.control_origination_by_control[control_id] = control_origination
-        return data
+            label = controls_by_label.get(control_id)
+            if label:
+                control_dict[label] = FedrampSSPData(control_origination=control_origination)
+        return control_dict
+
+    def load_profile_info(self, profile_path: str) -> Dict[str, str]:
+        """Load the profile and store the control by label."""
+        controls_by_label: Dict[str, str] = {}
+        profile_resolver = ProfileResolver()
+        resolved_catalog: Catalog = profile_resolver.get_resolved_profile_catalog(
+            self._root,
+            profile_path,
+            block_params=False,
+            params_format='[.]',
+            show_value_warnings=True,
+        )
+
+        for control in CatalogInterface(resolved_catalog).get_all_controls_from_dict():
+            label = ControlInterface.get_label(control)
+            if label:
+                controls_by_label[control.id] = label
+        return controls_by_label
 
     def _get_control_origination_values(self, implemented_requirement: ImplementedRequirement) -> Optional[str]:
         """

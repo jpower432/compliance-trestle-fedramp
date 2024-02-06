@@ -26,7 +26,7 @@ from trestle.core.generators import generate_sample_model
 from trestle.oscal import ssp
 from trestle.oscal.common import Property
 
-from trestle_fedramp.core.ssp_reader import ControlOrigination, FedrampSSPData, FedrampSSPReader
+from trestle_fedramp.core.ssp_reader import (ControlOrigination, FedrampControlDict, FedrampSSPReader)
 
 
 def test_control_origination() -> None:
@@ -64,13 +64,13 @@ def test_reader_control_origination(tmp_trestle_dir_with_ssp: Tuple[pathlib.Path
 
     ssp_file_path = ModelUtils.get_model_path_for_name_and_class(tmp_trestle_dir, ssp_name, ssp.SystemSecurityPlan)
     assert ssp_file_path is not None
-    ssp_data: FedrampSSPData = ssp_reader.read_ssp_data(ssp_file_path)
-    assert ssp_data is not None
+    ssp_control_dict: FedrampControlDict = ssp_reader.read_ssp_data(ssp_file_path)
+    assert len(ssp_control_dict) > 0
 
     # Verify the control origination values for the implemented requirements.
-    assert ssp_data.control_origination_by_control['ac-1'] == 'Service Provider System Specific'
-    assert ssp_data.control_origination_by_control['ac-2'] == 'Shared (Service Provider and Customer Responsibility)'
-    assert ssp_data.control_origination_by_control['au-1'] == 'Service Provider Corporate'
+    assert ssp_control_dict['AC-1'].control_origination == 'Service Provider System Specific'
+    assert ssp_control_dict['AC-2'].control_origination == 'Shared (Service Provider and Customer Responsibility)'
+    assert ssp_control_dict['AU-1'].control_origination == 'Service Provider Corporate'
 
 
 def test_get_control_origination() -> None:

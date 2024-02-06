@@ -19,7 +19,7 @@ import pathlib
 
 import pytest
 
-from trestle_fedramp.core.ssp_transform import BaselineLevel
+from trestle_fedramp.core.baselines import BaselineLevel
 
 
 def test_invalid_baseline_level() -> None:

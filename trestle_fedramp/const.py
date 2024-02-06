@@ -40,3 +40,8 @@ FEDRAMP_CUST_PROVIDED = 'Provided by Customer (Customer System Specific)'
 FEDRAMP_SHARED = 'Shared (Service Provider and Customer Responsibility)'
 FEDRAMP_HYBRID = 'Service Provider Hybrid (Corporate and System Specific)'
 FEDRAMP_INHERITED = 'Inherited'
+
+# FedRAMP Template Constants
+CONTROL_SUMMARY = 'Control Summary Information'
+XML_NAMESPACE = '{http://schemas.microsoft.com/office/word/2010/wordml}'
+CHECKBOX_XPATH = './/w:sdt//w:sdtPr//w14:checkbox'
