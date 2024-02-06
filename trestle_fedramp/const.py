@@ -30,7 +30,6 @@ NIST_FILE_PARAM_NAME = 'file'
 FEDRAMP_APPENDIX_A_LOW = 'fedramp-source/content/templates/SSP-Appendix-A-Low-FedRAMP-Security-Controls.docx'
 FEDRAMP_APPENDIX_A_MODERATE = 'fedramp-source/content/templates/SSP-Appendix-A-Moderate-FedRAMP-Security-Controls.docx'
 FEDRAMP_APPENDIX_A_HIGH = 'fedramp-source/content/templates/SSP-Appendix-A-High-FedRAMP-Security-Controls.docx'
-FEDRAMP_APPENDIX_A_LI_SAAS = 'fedramp-source/content/templates/SSP-Appendix-A-LI-SaaS-FedRAMP-Security-Controls.docx'
 
 # CONTROL ORIGINATION FEDRAMP
 

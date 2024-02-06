@@ -19,9 +19,7 @@ from pkg_resources import resource_filename
 
 from trestle.common.err import TrestleError
 
-from trestle_fedramp.const import (
-    FEDRAMP_APPENDIX_A_HIGH, FEDRAMP_APPENDIX_A_LI_SAAS, FEDRAMP_APPENDIX_A_LOW, FEDRAMP_APPENDIX_A_MODERATE
-)
+from trestle_fedramp.const import (FEDRAMP_APPENDIX_A_HIGH, FEDRAMP_APPENDIX_A_LOW, FEDRAMP_APPENDIX_A_MODERATE)
 from trestle_fedramp.core.ssp_reader import FedrampSSPData, FedrampSSPReader
 
 
@@ -31,16 +29,15 @@ class BaselineLevel:
     LOW = 'low'
     MODERATE = 'moderate'
     HIGH = 'high'
-    LI_SAAS = 'li-saas'
 
-    LEVELS = {LOW, MODERATE, HIGH, LI_SAAS}
+    LEVELS = {LOW, MODERATE, HIGH}
 
     @classmethod
     def get_template(cls, level: str) -> str:
         """Get the template file for the given level.
 
         Args:
-            level (str): The baseline level ('low', 'moderate', 'high', 'li-saas').
+            level (str): The baseline level ('low', 'moderate', 'high').
 
         Returns:
             str: The file path of the template.
@@ -49,8 +46,7 @@ class BaselineLevel:
         data = {
             cls.LOW: resource_filename(resources_path, FEDRAMP_APPENDIX_A_LOW),
             cls.MODERATE: resource_filename(resources_path, FEDRAMP_APPENDIX_A_MODERATE),
-            cls.HIGH: resource_filename(resources_path, FEDRAMP_APPENDIX_A_HIGH),
-            cls.LI_SAAS: resource_filename(resources_path, FEDRAMP_APPENDIX_A_LI_SAAS)
+            cls.HIGH: resource_filename(resources_path, FEDRAMP_APPENDIX_A_HIGH)
         }
         if level not in cls.LEVELS:
             raise ValueError(f'Invalid level: {level}. Use one of {cls.LEVELS}')
