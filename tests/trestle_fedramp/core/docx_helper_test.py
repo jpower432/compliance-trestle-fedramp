@@ -28,10 +28,13 @@ def verify_checkboxes(cell: _Cell, ssp_data: FedrampSSPData) -> None:
     """Verify the checkboxes are populated correctly."""
     for paragraph in cell.paragraphs:
         checked = checkbox_is_set(paragraph)
+        checked_text = checkbox_text_is_set(paragraph)
         if ssp_data.control_origination is None or ssp_data.control_origination not in paragraph.text:
             assert not checked
+            assert not checked_text
         else:
             assert checked
+            assert checked_text
 
 
 def checkbox_is_set(paragraph: Paragraph) -> bool:
@@ -41,6 +44,15 @@ def checkbox_is_set(paragraph: Paragraph) -> bool:
         checkbox = checkboxes[0]
         checked = checkbox.find(f'{const.XML_NAMESPACE}checked')
         return checked.attrib[f'{const.XML_NAMESPACE}val'] == '1'
+    return False
+
+
+def checkbox_text_is_set(paragraph: Paragraph) -> bool:
+    """Get the checkbox text value."""
+    checkboxes = paragraph._element.xpath(const.BOX_ICON_XPATH)
+    if checkboxes:
+        checkbox = checkboxes[0]
+        return checkbox.text == const.CHECKED_BOX_ICON
     return False
 
 

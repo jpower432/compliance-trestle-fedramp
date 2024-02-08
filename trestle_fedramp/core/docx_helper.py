@@ -47,10 +47,10 @@ class ControlSummaries():
                 if self.is_control_summary_table(row_header):
                     control_id = self.get_control_id(row_header)
                     if control_id in self.control_dict:
-                        logging.debug(f'Populating control ID {control_id}')
+                        logging.info(f'Populating the control summary for {control_id}.')
                         self._populate_table(table, self.control_dict[control_id])
                     else:
-                        logger.warning(f'Control ID {control_id} not found in the control dictionary.')
+                        logger.debug(f'Control ID {control_id} not found in the control dictionary.')
         except Exception as e:
             raise TrestleError(f'Error populating control summaries: {e}')
 
@@ -90,7 +90,17 @@ class ControlSummaries():
         """Check the checkbox in the paragraph."""
         # Find the checkbox element and set the checked attribute to 1
         check_box = paragraph._element.xpath(const.CHECKBOX_XPATH)[0]
-        if not check_box:
+        if check_box is None:
             raise TrestleError(f'Checkbox not found in the paragraph with text: {paragraph.text}')
         checked = check_box.find(f'{const.XML_NAMESPACE}checked')
         checked.attrib[f'{const.XML_NAMESPACE}val'] = '1'
+        self._set_checkbox_text(paragraph)
+
+    def _set_checkbox_text(self, paragraph: Paragraph) -> None:
+        """Set the checkbox text."""
+        checkbox_text = paragraph._element.xpath(const.BOX_ICON_XPATH)[0]
+        if checkbox_text is None:
+            logger.warning(f'Checkbox text not found in the paragraph with text: {paragraph.text}')
+            return
+        logger.debug(f'Checkbox text found in the paragraph with text: {paragraph.text}')
+        checkbox_text.text = const.CHECKED_BOX_ICON
