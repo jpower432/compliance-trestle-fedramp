@@ -19,6 +19,10 @@ from docx.document import Document as DocxDocument  # type: ignore
 from docx.table import _Cell  # type: ignore
 from docx.text.paragraph import Paragraph  # type: ignore
 
+import pytest
+
+from trestle.common.err import TrestleError
+
 from trestle_fedramp import const
 from trestle_fedramp.core.docx_helper import ControlSummaries
 from trestle_fedramp.core.ssp_reader import FedrampControlDict, FedrampSSPData
@@ -69,6 +73,16 @@ def test_control_summaries_populate(docx_document: DocxDocument, test_ssp_contro
         control_id = ControlSummaries.get_control_id(row_header)
         data: FedrampSSPData = test_ssp_control_dict.get(control_id, FedrampSSPData(None))
         verify_checkboxes(table.cell(*control_summaries.control_origination_cell), data)
+
+
+def test_control_summaries_with_invalid_input(docx_document: DocxDocument) -> None:
+    """Trigger and error with invalid input."""
+    # AC-1 does not have an control origination inherited value
+    invalid_control_dict: FedrampControlDict = {'AC-1': FedrampSSPData(control_origination=const.FEDRAMP_INHERITED)}
+    control_summaries = ControlSummaries(docx_document, invalid_control_dict)
+
+    with pytest.raises(TrestleError, match='.*Invalid control origination for AC-1: Inherited'):
+        control_summaries.populate()
 
 
 def test_control_summaries_get_control_id() -> None:

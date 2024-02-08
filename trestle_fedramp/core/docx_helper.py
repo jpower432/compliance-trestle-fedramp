@@ -48,7 +48,7 @@ class ControlSummaries():
                     control_id = self.get_control_id(row_header)
                     if control_id in self.control_dict:
                         logging.info(f'Populating the control summary for {control_id}.')
-                        self._populate_table(table, self.control_dict[control_id])
+                        self._populate_table(table, control_id, self.control_dict[control_id])
                     else:
                         logger.debug(f'Control ID {control_id} not found in the control dictionary.')
         except Exception as e:
@@ -77,14 +77,19 @@ class ControlSummaries():
         }
         return data[control_origination]
 
-    def _populate_table(self, table: Table, ssp_data: FedrampSSPData) -> None:
+    def _populate_table(self, table: Table, control_id: str, ssp_data: FedrampSSPData) -> None:
         """Populate the table with the SSP data."""
         if ssp_data.control_origination:
-            co_paragraph_index_loc = self._get_co_paragraph_index_loc(ssp_data.control_origination)
-            # Control origination is always the last row in the table
-            control_origination_cell: _Cell = table.cell(*self.control_origination_cell)
-            co_paragraph = control_origination_cell.paragraphs[co_paragraph_index_loc]
-            self._set_checkbox(co_paragraph)
+            try:
+                co_paragraph_index_loc = self._get_co_paragraph_index_loc(ssp_data.control_origination)
+                # Control origination is always the last row in the table
+                control_origination_cell: _Cell = table.cell(*self.control_origination_cell)
+                co_paragraph: Paragraph = control_origination_cell.paragraphs[co_paragraph_index_loc]
+                self._set_checkbox(co_paragraph)
+            except IndexError:
+                raise TrestleError(f'Invalid control origination for {control_id}: {ssp_data.control_origination}')
+            except TrestleError as e:
+                raise TrestleError(f'Error populating control summary for {control_id}: {e}')
 
     def _set_checkbox(self, paragraph: Paragraph) -> None:
         """Check the checkbox in the paragraph."""
@@ -100,7 +105,6 @@ class ControlSummaries():
         """Set the checkbox text."""
         checkbox_text = paragraph._element.xpath(const.BOX_ICON_XPATH)[0]
         if checkbox_text is None:
-            logger.warning(f'Checkbox text not found in the paragraph with text: {paragraph.text}')
-            return
+            raise TrestleError(f'Checkbox text not found in the paragraph with text: {paragraph.text}')
         logger.debug(f'Checkbox text found in the paragraph with text: {paragraph.text}')
         checkbox_text.text = const.CHECKED_BOX_ICON
