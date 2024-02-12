@@ -30,4 +30,20 @@ NIST_FILE_PARAM_NAME = 'file'
 FEDRAMP_APPENDIX_A_LOW = 'fedramp-source/content/templates/SSP-Appendix-A-Low-FedRAMP-Security-Controls.docx'
 FEDRAMP_APPENDIX_A_MODERATE = 'fedramp-source/content/templates/SSP-Appendix-A-Moderate-FedRAMP-Security-Controls.docx'
 FEDRAMP_APPENDIX_A_HIGH = 'fedramp-source/content/templates/SSP-Appendix-A-High-FedRAMP-Security-Controls.docx'
-FEDRAMP_APPENDIX_A_LI_SAAS = 'fedramp-source/content/templates/SSP-Appendix-A-LI-SaaS-FedRAMP-Security-Controls.docx'
+
+# CONTROL ORIGINATION FEDRAMP
+
+FEDRAMP_SP_CORPORATE = 'Service Provider Corporate'
+FEDRAMP_SP_SYSTEM = 'Service Provider System Specific'
+FEDRAMP_CUST_CONFIGURED = 'Configured by Customer (Customer System Specific)'
+FEDRAMP_CUST_PROVIDED = 'Provided by Customer (Customer System Specific)'
+FEDRAMP_SHARED = 'Shared (Service Provider and Customer Responsibility)'
+FEDRAMP_HYBRID = 'Service Provider Hybrid (Corporate and System Specific)'
+FEDRAMP_INHERITED = 'Inherited'
+
+# FedRAMP Template Constants
+CONTROL_SUMMARY = 'Control Summary Information'
+XML_NAMESPACE = '{http://schemas.microsoft.com/office/word/2010/wordml}'
+CHECKBOX_XPATH = './/w:sdt//w:sdtPr//w14:checkbox'
+BOX_ICON_XPATH = './/w:sdt//w:sdtContent//w:r//w:t'
+CHECKED_BOX_ICON = '☒'
