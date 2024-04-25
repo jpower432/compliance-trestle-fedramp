@@ -215,7 +215,7 @@ class ControlSummaries():
             if ssp_data.responsible_roles:
                 responsible_role_cell: _Cell = table.cell(*self._responsible_role_cell)
                 responsible_role_str = ', '.join(ssp_data.responsible_roles)
-                responsible_role_cell.text = f'{responsible_role_cell.text} {responsible_role_str})'
+                responsible_role_cell.text = f'{responsible_role_cell.text} {responsible_role_str}'
         except Exception as e:
             raise TrestleError(f'Error populating control summary for {control_id}: {e}')
 

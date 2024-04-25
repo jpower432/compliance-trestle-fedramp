@@ -134,4 +134,4 @@ def verify_responsible_roles(responsible_roles: _Cell, ssp_data: FedrampSSPData)
         assert responsible_roles.text == 'Responsible Role:'
     else:
         expected_roles = ', '.join(ssp_data.responsible_roles)
-        assert expected_roles in responsible_roles.text
+        assert responsible_roles.text == 'Responsible Role: ' + expected_roles
