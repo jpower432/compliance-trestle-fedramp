@@ -26,7 +26,7 @@ default_bump_level = 0
 
 
 [tool.semantic_release.branches.main]
-match = "(main)"
+match = "(fix/release-testing)"
 prerelease_token = "rc"
 prerelease = false
 

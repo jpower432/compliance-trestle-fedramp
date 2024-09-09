@@ -1,0 +1,103 @@
+name: Trestle Release Testing
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        #os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+        - os: ubuntu-latest
+          path: ~/.cache/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
+        # - os: windows-latest
+        #   path: ~\AppData\Local\pip\Cache
+        python-version: [3.9, 3.11]
+    steps:
+    - name: Don't mess with line endings
+      run: |
+        git config --global core.autocrlf false
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: actions/cache@v4
+      with:
+        path: ${{ matrix.path }}
+        key: ${{ matrix.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('setup.cfg') }}
+        restore-keys: |
+         ${{ matrix.os }}-${{ matrix.python-version }}-pip-
+
+    - name: Install build tools
+      run: |
+        make develop
+    - name: Setup pre-commit
+      if: ${{ (matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9') }}
+      run: |
+        make pre-commit
+    - name: Install dependencies
+      run: |
+        make install
+    - name: Run md document formatting (mdformat)
+      if: ${{ (matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9') }}
+      run: |
+        make mdformat
+    - name: Run code formatting (yapf)
+      if: ${{ (matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9') }}
+      run: |
+        make code-format
+    - name: Run code linting (flake8)
+      if: ${{ (matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9') }}
+      run: |
+        make code-lint
+    - name: Run code typing check (mypy)
+      if: ${{ (matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9') }}
+      continue-on-error: true 
+      run: |
+        make code-typing
+    - name: Pytest Fast
+      if: ${{ !(matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9') }}
+      run: |
+        make test
+    - name: Pytest Cov
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' }}
+      run: |
+        make test-cov
+
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    environment:
+      name: release
+      url: https://pypi.org/p/test-pypi-location
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Install build tools
+        run: |
+          make develop
+
+      # This action uses Python Semantic Release v8
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v9.8.0
+        with:
+            root_options: "-vv"
+            github_token: ${{ secrets.GITHUB_TOKEN }}
