@@ -2,6 +2,15 @@
 
 
 
+## v0.1.1 (2024-09-09)
+
+### Fix
+
+* fix: removes setup python
+
+Signed-off-by: Jennifer Power &lt;barnabei.jennifer@gmail.com&gt; ([`960e1bf`](https://github.com/jpower432/compliance-trestle-fedramp/commit/960e1bf31ccfab4e11e09f1dcd7593eea9d723c7))
+
+
 ## v0.1.0 (2024-09-09)
 
 ### Breaking
