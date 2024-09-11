@@ -2,6 +2,15 @@
 
 
 
+## v0.2.0 (2024-09-11)
+
+### Feature
+
+* feat: test upload to GH
+
+Signed-off-by: Jennifer Power &lt;barnabei.jennifer@gmail.com&gt; ([`eae115d`](https://github.com/jpower432/compliance-trestle-fedramp/commit/eae115dd475c56caa6c28fc40fe6172cf6294ab1))
+
+
 ## v0.1.1 (2024-09-09)
 
 ### Fix
