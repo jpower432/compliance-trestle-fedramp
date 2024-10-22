@@ -1,6 +1,20 @@
 # CHANGELOG
 
+## v0.3.0 (2024-10-22)
 
+### Feature
+
+* feat: update release-testing.yml
+
+This is a test on my fork ([`5a478ef`](https://github.com/jpower432/compliance-trestle-fedramp/commit/5a478ef071bcabd69530fad6199f853a09cd81c9))
+
+### Test
+
+* test: test issues with permissions ([`3f5661c`](https://github.com/jpower432/compliance-trestle-fedramp/commit/3f5661cb373e9a6463693499776757a5352668de))
+
+### Unknown
+
+* Create empty file ([`4e3d362`](https://github.com/jpower432/compliance-trestle-fedramp/commit/4e3d362cf42725b9dacdcdcfbdba9e4de0da1277))
 
 ## v0.2.0 (2024-09-11)
 
@@ -10,7 +24,6 @@
 
 Signed-off-by: Jennifer Power &lt;barnabei.jennifer@gmail.com&gt; ([`eae115d`](https://github.com/jpower432/compliance-trestle-fedramp/commit/eae115dd475c56caa6c28fc40fe6172cf6294ab1))
 
-
 ## v0.1.1 (2024-09-09)
 
 ### Fix
@@ -18,7 +31,6 @@ Signed-off-by: Jennifer Power &lt;barnabei.jennifer@gmail.com&gt; ([`eae115d`](h
 * fix: removes setup python
 
 Signed-off-by: Jennifer Power &lt;barnabei.jennifer@gmail.com&gt; ([`960e1bf`](https://github.com/jpower432/compliance-trestle-fedramp/commit/960e1bf31ccfab4e11e09f1dcd7593eea9d723c7))
-
 
 ## v0.1.0 (2024-09-09)
 
