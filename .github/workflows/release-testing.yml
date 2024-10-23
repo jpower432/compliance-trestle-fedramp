@@ -1,4 +1,4 @@
-name: Trestle Release Testing
+name: Trestle Release Test
 
 on:
   workflow_dispatch:
