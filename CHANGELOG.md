@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v0.4.0 (2024-10-23)
+
+### Feature
+
+* feat: update release-testing.yml (#14)
+
+test feature ([`2c3ff8c`](https://github.com/jpower432/compliance-trestle-fedramp/commit/2c3ff8c2fa0e9618eaa8cb6bfbfe680f5369a369))
+
 ## v0.3.0 (2024-10-22)
 
 ### Feature
